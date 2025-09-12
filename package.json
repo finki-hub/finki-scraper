@@ -7,7 +7,7 @@
     "@hono/node-server": "^1.19.2",
     "discord.js": "^14.22.1",
     "finki-auth": "^1.4.0",
-    "hono": "^4.9.6",
+    "hono": "^4.9.7",
     "jsdom": "^26.1.0",
     "pino": "^9.9.5",
     "pino-pretty": "^13.1.1",
