@@ -102,7 +102,7 @@ export class Scraper {
       try {
         await this.getAndSendPosts(true);
       } catch (error) {
-        await this.handleError(`${error}`);
+        await this.handleError(error, 'while fetching and sending posts');
         await Scraper.sleep(getConfigProperty('errorDelay'));
 
         continue;
@@ -120,7 +120,7 @@ export class Scraper {
     try {
       return await this.getAndSendPosts(false);
     } catch (error) {
-      await this.handleError(`${error}`);
+      await this.handleError(error, 'while fetching and sending posts');
       return null;
     }
   }
@@ -335,8 +335,8 @@ export class Scraper {
       if (sendPosts) {
         try {
           await this.sendPost(embed, id);
-        } catch {
-          await this.handleError(`${ERROR_MESSAGES.postSendFailed}: ${id}`);
+        } catch (error) {
+          await this.handleError(error, `while sending post: ${id}`);
         }
       }
     }
