@@ -46,92 +46,45 @@ export class DiplomasStrategy implements ScraperStrategy {
   public getPostData(element: Element): PostData {
     const title =
       element.querySelector('div.panel-heading')?.textContent.trim() ?? '?';
-    const [index, student] = element
-      .querySelector(
-        'div.panel-body > table tr:nth-of-type(1) > td:nth-of-type(2)',
-      )
-      ?.textContent.trim()
-      .split(' - ') ?? ['?', '?'];
-    const mentor =
-      element
-        .querySelector(
-          'div.panel-body > table tr:nth-of-type(2) > td:nth-of-type(2)',
-        )
-        ?.textContent.trim() ?? '?';
-    const member1 =
-      element
-        .querySelector(
-          'div.panel-body > table tr:nth-of-type(3) > td:nth-of-type(2)',
-        )
-        ?.textContent.trim() ?? '?';
-    const member2 =
-      element
-        .querySelector(
-          'div.panel-body > table tr:nth-of-type(4) > td:nth-of-type(2)',
-        )
-        ?.textContent.trim() ?? '?';
-    const date =
-      element
-        .querySelector(
-          'div.panel-body > table tr:nth-of-type(5) > td:nth-of-type(2)',
-        )
-        ?.textContent.trim() ?? '?';
-    const status =
-      element
-        .querySelector(
-          'div.panel-body > table tr:nth-of-type(6) > td:nth-of-type(2)',
-        )
-        ?.textContent.trim() ?? '?';
-    const url =
-      element
-        .querySelector(
-          'div.panel-body > table tr:nth-of-type(7) > td:nth-of-type(2) a',
-        )
-        ?.getAttribute('href') ?? null;
+
+    const rows = element.querySelectorAll('div.panel-body table tr');
+
+    const cellText = (row: number, col = 2) =>
+      rows[row]?.querySelector(`td:nth-of-type(${col})`)?.textContent.trim() ??
+      '?';
+
+    const [index, student] = cellText(0)
+      .split(' - ')
+      .map((s) => s.trim());
+
+    const mentor = cellText(1);
+    const member1 = cellText(2);
+    const member2 = cellText(3);
+    const date = cellText(4);
+    const status = cellText(5);
+
+    const url = rows[6]
+      ?.querySelector('td:nth-of-type(2) a')
+      ?.getAttribute('href');
     const link =
-      url === null || url.includes('javascript')
+      !url || url.startsWith('javascript')
         ? null
         : `http://diplomski.finki.ukim.mk/${url}`;
-    const content =
-      element
-        .querySelector(
-          'div.panel-body > table tr:nth-of-type(8) > td:nth-of-type(2)',
-        )
-        ?.textContent.trim()
-        .slice(0, 500) ?? '?';
+
+    const content = cellText(7).slice(0, 500);
 
     const embed = new EmbedBuilder()
       .setTitle(title)
       .setAuthor({
         name: `${index} - ${student}`,
       })
-      .setURL(link)
+      .setURL(link ?? null)
       .addFields([
-        {
-          inline: true,
-          name: 'Ментор',
-          value: mentor,
-        },
-        {
-          inline: true,
-          name: 'Член 1',
-          value: member1,
-        },
-        {
-          inline: true,
-          name: 'Член 2',
-          value: member2,
-        },
-        {
-          inline: true,
-          name: 'Датум',
-          value: date,
-        },
-        {
-          inline: true,
-          name: 'Статус',
-          value: status,
-        },
+        { inline: true, name: 'Ментор', value: mentor },
+        { inline: true, name: 'Член 1', value: member1 },
+        { inline: true, name: 'Член 2', value: member2 },
+        { inline: true, name: 'Датум', value: date },
+        { inline: true, name: 'Статус', value: status },
       ])
       .setDescription(content === '' ? 'Нема опис.' : content)
       .setColor(getThemeColor())
