@@ -55,20 +55,18 @@ export class CourseStrategy implements ScraperStrategy {
         .querySelector('[title="Permanent link to this post"]')
         ?.getAttribute('href')
         ?.trim() ?? null;
-    const authorImage =
-      element
-        .querySelector('img[title*="Picture of"]')
-        ?.getAttribute('src')
-        ?.trim() ?? '?';
+    const authorImage = element
+      .querySelector('img[title*="Picture of"]')
+      ?.getAttribute('src')
+      ?.trim();
     const authorName =
       element.querySelector('h4 + div > a')?.textContent.trim() ?? '?';
-    const authorLink =
-      element
-        .querySelector('div.d-flex.flex-column > div > a')
-        ?.getAttribute('href')
-        ?.trim()
-        .split('&')
-        .at(0) ?? '?';
+    const authorLink = element
+      .querySelector('div.d-flex.flex-column > div > a')
+      ?.getAttribute('href')
+      ?.trim()
+      .split('&')
+      .at(0);
     const content =
       element
         .querySelector('div.post-content-container')
@@ -79,6 +77,7 @@ export class CourseStrategy implements ScraperStrategy {
 
     const embed = new EmbedBuilder()
       .setTitle(title)
+      // @ts-expect-error optional keys
       .setAuthor({
         iconURL: authorImage,
         name: authorName,
