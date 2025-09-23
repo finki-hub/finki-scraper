@@ -257,12 +257,42 @@ export class Scraper {
     }
   }
 
-  private async handleError(message: string): Promise<void> {
-    this.logger.error(`[${this.scraperName}] ${message}`);
-    await (errorWebhook ?? this.webhook)?.send({
-      content: message,
-      username: this.scraperConfig.name ?? this.scraperName,
-    });
+  private async handleError(error: unknown, context?: string): Promise<void> {
+    let errorMessage: string;
+    let stackTrace: string | undefined;
+
+    if (Error.isError(error)) {
+      errorMessage = error.message;
+      stackTrace = error.stack;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    } else {
+      errorMessage = JSON.stringify(error);
+    }
+
+    this.logger.error(`[${this.scraperName}] ${context ?? ''} ${errorMessage}`);
+
+    if (stackTrace) {
+      this.logger.error(stackTrace);
+    }
+
+    const webhookMessage = [
+      `❌ Error in **${this.scraperName}**`,
+      context ? `Context: ${context}` : null,
+      `Message: ${errorMessage}`,
+      stackTrace ? `\`\`\`\n${stackTrace.slice(0, 1_800)}\n\`\`\`` : null,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    try {
+      await (errorWebhook ?? this.webhook)?.send({
+        content: webhookMessage,
+        username: this.scraperConfig.name ?? this.scraperName,
+      });
+    } catch (error_) {
+      this.logger.error(`Failed to send error to webhook: ${error_}`);
+    }
   }
 
   private hasNoNewPosts(ids: Array<null | string>, cache: string[]) {
