@@ -50,28 +50,24 @@ export class CourseStrategy implements ScraperStrategy {
   }
 
   public getPostData(element: Element): PostData {
-    const link =
-      element
-        .querySelector('[title="Permanent link to this post"]')
-        ?.getAttribute('href')
-        ?.trim() ?? null;
-    const authorImage = element
-      .querySelector('img[title*="Picture of"]')
-      ?.getAttribute('src')
-      ?.trim();
-    const authorName =
-      element.querySelector('h4 + div > a')?.textContent.trim() ?? '?';
-    const authorLink = element
-      .querySelector('div.d-flex.flex-column > div > a')
-      ?.getAttribute('href')
-      ?.trim()
-      .split('&')
-      .at(0);
+    const linkEl = element.querySelector<HTMLAnchorElement>(
+      '[title="Permanent link to this post"]',
+    );
+    const link = linkEl?.href ?? null;
+
+    const imgEl = element.querySelector<HTMLImageElement>(
+      'img[title*="Picture of"]',
+    );
+    const authorImage = imgEl?.src ?? undefined;
+
+    const authorDiv = element.querySelector('div.mb-3');
+    const authorAnchor = authorDiv?.querySelector('a');
+    const authorName = authorAnchor?.textContent.trim() ?? '?';
+    const authorLink = authorAnchor?.href ?? undefined;
+
     const content =
-      element
-        .querySelector('div.post-content-container')
-        ?.textContent.trim()
-        .slice(0, 500) ?? '?';
+      element.querySelector('div.post-content-container')?.textContent.trim() ??
+      '?';
     const title =
       element.querySelector('h4 > a:last-of-type')?.textContent.trim() ?? '?';
 
@@ -84,7 +80,7 @@ export class CourseStrategy implements ScraperStrategy {
         url: authorLink,
       })
       .setURL(link)
-      .setDescription(content === '' ? 'Нема опис.' : content)
+      .setDescription(content === '' ? 'Нема опис.' : content.slice(0, 500))
       .setColor(getThemeColor())
       .setTimestamp();
 
