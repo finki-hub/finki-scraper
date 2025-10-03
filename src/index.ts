@@ -1,8 +1,11 @@
 import { setTimeout } from 'node:timers/promises';
 
 import { LOG_MESSAGES } from './utils/constants.js';
+import { registerGlobalErrorHandlers } from './utils/errors.js';
 import { logger } from './utils/logger.js';
 import { getNamedScrapers } from './utils/scrapers.js';
+
+registerGlobalErrorHandlers();
 
 logger.info(LOG_MESSAGES.initializing);
 
