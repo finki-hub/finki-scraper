@@ -258,7 +258,7 @@ export class Scraper {
   }
 
   private async handleError(error: unknown, context?: string): Promise<void> {
-    let errorMessage: string;
+    let errorMessage = 'Unknown error';
     let stackTrace: string | undefined;
 
     if (Error.isError(error)) {
@@ -267,7 +267,11 @@ export class Scraper {
     } else if (typeof error === 'string') {
       errorMessage = error;
     } else {
-      errorMessage = JSON.stringify(error);
+      try {
+        errorMessage = JSON.stringify(error);
+      } catch {
+        errorMessage = String(error);
+      }
     }
 
     this.logger.error(`[${this.scraperName}] ${context ?? ''} ${errorMessage}`);
@@ -280,7 +284,6 @@ export class Scraper {
       `❌ Error in **${this.scraperName}**`,
       context ? `Context: ${context}` : null,
       `Message: ${errorMessage}`,
-      stackTrace ? `\`\`\`\n${stackTrace.slice(0, 1_800)}\n\`\`\`` : null,
     ]
       .filter(Boolean)
       .join('\n');
