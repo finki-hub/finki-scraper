@@ -40,7 +40,12 @@ export class DiplomasStrategy implements ScraperStrategy {
   }
 
   public getId(element: Element): null | string {
-    return element.querySelector(this.idsSelector)?.textContent.trim() ?? null;
+    return (
+      element
+        .querySelector(this.idsSelector)
+        ?.textContent.replaceAll(/\s+/gu, ' ')
+        .trim() ?? null
+    );
   }
 
   public getPostData(element: Element): PostData {
