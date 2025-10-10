@@ -6,7 +6,6 @@ import type { PostData } from '../lib/Post.js';
 
 import { getConfigProperty, getThemeColor } from '../configuration/config.js';
 import { type ScraperStrategy } from '../lib/Scraper.js';
-import { getCookieHeader } from '../utils/cookies.js';
 
 export class DiplomasStrategy implements ScraperStrategy {
   public idsSelector = 'div.panel-heading';
@@ -24,19 +23,11 @@ export class DiplomasStrategy implements ScraperStrategy {
       );
     }
 
-    const auth = new CasAuthentication(
-      credentials.username,
-      credentials.password,
-    );
+    const auth = new CasAuthentication(credentials);
 
-    const rawCookies = await auth.authenticate(Service.DIPLOMAS);
-    const cookies: Record<string, string> = {};
+    await auth.authenticate(Service.DIPLOMAS);
 
-    for (const cookie of rawCookies) {
-      cookies[cookie.key] = cookie.value;
-    }
-
-    return getCookieHeader(cookies);
+    return await auth.buildCookieHeader(Service.DIPLOMAS);
   }
 
   public getId(element: Element): null | string {

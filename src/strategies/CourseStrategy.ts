@@ -5,7 +5,6 @@ import type { PostData } from '../lib/Post.js';
 
 import { getConfigProperty, getThemeColor } from '../configuration/config.js';
 import { type ScraperStrategy } from '../lib/Scraper.js';
-import { getCookieHeader } from '../utils/cookies.js';
 
 export class CourseStrategy implements ScraperStrategy {
   public idsSelector = '[title="Permanent link to this post"]';
@@ -27,19 +26,11 @@ export class CourseStrategy implements ScraperStrategy {
       );
     }
 
-    const auth = new CasAuthentication(
-      credentials.username,
-      credentials.password,
-    );
+    const auth = new CasAuthentication(credentials);
 
-    const rawCookies = await auth.authenticate(Service.COURSES);
-    const cookies: Record<string, string> = {};
+    await auth.authenticate(Service.COURSES);
 
-    for (const { key, value } of rawCookies) {
-      cookies[key] = value;
-    }
-
-    return getCookieHeader(cookies);
+    return await auth.buildCookieHeader(Service.COURSES);
   }
 
   public getId(element: Element): null | string {

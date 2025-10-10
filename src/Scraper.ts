@@ -4,7 +4,7 @@ import {
   roleMention,
   WebhookClient,
 } from 'discord.js';
-import { isCookieValid } from 'finki-auth';
+import { isCookieHeaderValid } from 'finki-auth';
 import { JSDOM } from 'jsdom';
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -135,7 +135,10 @@ export class Scraper {
     const isValidCookie = Boolean(
       this.strategy.scraperService &&
         this.cookie &&
-        (await isCookieValid(this.strategy.scraperService, this.cookie)),
+        (await isCookieHeaderValid({
+          cookieHeader: this.cookie,
+          service: this.strategy.scraperService,
+        })),
     );
 
     if (!isValidCookie) {
