@@ -1,5 +1,9 @@
+import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import pino from 'pino';
+
+const logsDir = join('.', 'logs');
+await mkdir(logsDir, { recursive: true });
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const transport = pino.transport({
