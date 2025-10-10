@@ -57,14 +57,6 @@ export class DiplomasStrategy implements ScraperStrategy {
     const member1 = cellText(2);
     const member2 = cellText(3);
 
-    const url = rows[6]
-      ?.querySelector('td:nth-of-type(2) a')
-      ?.getAttribute('href');
-    const link =
-      !url || url.startsWith('javascript')
-        ? null
-        : `http://diplomski.finki.ukim.mk/${url}`;
-
     const content = cellText(7).slice(0, 500);
 
     const embed = new EmbedBuilder()
@@ -72,7 +64,6 @@ export class DiplomasStrategy implements ScraperStrategy {
       .setAuthor({
         name: `${index} - ${student}`,
       })
-      .setURL(link ?? null)
       .addFields([
         { inline: true, name: 'Ментор', value: mentor },
         { inline: true, name: 'Член 1', value: member1 },
