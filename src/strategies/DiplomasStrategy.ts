@@ -56,8 +56,6 @@ export class DiplomasStrategy implements ScraperStrategy {
     const mentor = cellText(1);
     const member1 = cellText(2);
     const member2 = cellText(3);
-    const date = cellText(4);
-    const status = cellText(5);
 
     const url = rows[6]
       ?.querySelector('td:nth-of-type(2) a')
@@ -79,8 +77,6 @@ export class DiplomasStrategy implements ScraperStrategy {
         { inline: true, name: 'Ментор', value: mentor },
         { inline: true, name: 'Член 1', value: member1 },
         { inline: true, name: 'Член 2', value: member2 },
-        { inline: true, name: 'Датум', value: date },
-        { inline: true, name: 'Статус', value: status },
       ])
       .setDescription(content === '' ? 'Нема опис.' : content)
       .setColor(getThemeColor())
