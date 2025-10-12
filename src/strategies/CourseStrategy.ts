@@ -1,10 +1,17 @@
-import { EmbedBuilder } from 'discord.js';
+import {
+  bold,
+  ContainerBuilder,
+  heading,
+  hyperlink,
+  TextDisplayBuilder,
+} from 'discord.js';
 import { CasAuthentication, Service } from 'finki-auth';
 
 import type { PostData } from '../lib/Post.js';
 
 import { getConfigProperty, getThemeColor } from '../configuration/config.js';
 import { type ScraperStrategy } from '../lib/Scraper.js';
+import { truncateString } from '../utils/components.js';
 
 export class CourseStrategy implements ScraperStrategy {
   public idsSelector = '[title="Permanent link to this post"]';
@@ -49,12 +56,12 @@ export class CourseStrategy implements ScraperStrategy {
     const imgEl = element.querySelector<HTMLImageElement>(
       'img[title*="Picture of"]',
     );
-    const authorImage = imgEl?.src ?? undefined;
+    const authorImage = imgEl?.src ?? null;
 
     const authorDiv = element.querySelector('div.mb-3');
     const authorAnchor = authorDiv?.querySelector('a');
     const authorName = authorAnchor?.textContent.trim() ?? '?';
-    const authorLink = authorAnchor?.href ?? undefined;
+    const authorLink = authorAnchor?.href ?? null;
 
     const content =
       element.querySelector('div.post-content-container')?.textContent.trim() ??
@@ -62,21 +69,37 @@ export class CourseStrategy implements ScraperStrategy {
     const title =
       element.querySelector('h4 > a:last-of-type')?.textContent.trim() ?? '?';
 
-    const embed = new EmbedBuilder()
-      .setTitle(title)
-      // @ts-expect-error optional keys
-      .setAuthor({
-        iconURL: authorImage,
-        name: authorName,
-        url: authorLink,
-      })
-      .setURL(link)
-      .setDescription(content === '' ? 'Нема опис.' : content.slice(0, 500))
-      .setColor(getThemeColor())
-      .setTimestamp();
+    const textDisplayComponents = [
+      new TextDisplayBuilder().setContent(
+        authorLink === null
+          ? bold(authorName)
+          : bold(hyperlink(authorName, authorLink)),
+      ),
+      new TextDisplayBuilder().setContent(
+        link === null ? heading(title, 3) : heading(hyperlink(title, link), 3),
+      ),
+      new TextDisplayBuilder().setContent(
+        content === '' ? 'Нема опис.' : truncateString(content),
+      ),
+    ];
+
+    const containerBuilder = new ContainerBuilder().setAccentColor(
+      getThemeColor(),
+    );
+
+    const component =
+      authorImage === null
+        ? containerBuilder.addTextDisplayComponents(textDisplayComponents)
+        : containerBuilder.addSectionComponents((sectionComponentBuilder) =>
+            sectionComponentBuilder
+              .setThumbnailAccessory((thumbnailBuilder) =>
+                thumbnailBuilder.setURL(authorImage),
+              )
+              .addTextDisplayComponents(textDisplayComponents),
+          );
 
     return {
-      embed,
+      component,
       id: this.getId(element),
     };
   }

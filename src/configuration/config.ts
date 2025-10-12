@@ -1,5 +1,3 @@
-import type { ColorResolvable } from 'discord.js';
-
 import { readFileSync } from 'node:fs';
 
 import { type ConfigKeys, ConfigSchema } from '../lib/Config.js';
@@ -24,5 +22,4 @@ const config = initializeConfig();
 export const getConfigProperty = <T extends ConfigKeys>(property: T) =>
   config?.[property] ?? DEFAULT_CONFIGURATION[property];
 
-export const getThemeColor = () =>
-  getConfigProperty('color') as ColorResolvable;
+export const getThemeColor = () => getConfigProperty('color');

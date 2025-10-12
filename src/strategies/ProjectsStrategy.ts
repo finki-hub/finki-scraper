@@ -1,9 +1,15 @@
-import { EmbedBuilder } from 'discord.js';
+import {
+  ContainerBuilder,
+  heading,
+  hyperlink,
+  TextDisplayBuilder,
+} from 'discord.js';
 
 import type { PostData } from '../lib/Post.js';
 
 import { getThemeColor } from '../configuration/config.js';
 import { type ScraperStrategy } from '../lib/Scraper.js';
+import { truncateString } from '../utils/components.js';
 
 export class ProjectsStrategy implements ScraperStrategy {
   public idsSelector = 'a + a';
@@ -25,22 +31,37 @@ export class ProjectsStrategy implements ScraperStrategy {
     const content =
       element
         .querySelector('div.col-xs-12.col-sm-8 > div.field-content')
-        ?.textContent.trim()
-        .slice(0, 500) ?? '?';
+        ?.textContent.trim() ?? '?';
     const image =
       element.querySelector('img')?.getAttribute('src')?.split('?').at(0) ??
-      '?';
+      null;
 
-    const embed = new EmbedBuilder()
-      .setTitle(title)
-      .setURL(link)
-      .setThumbnail(image)
-      .setDescription(content === '' ? 'Нема опис.' : content)
-      .setColor(getThemeColor())
-      .setTimestamp();
+    const textDisplayComponents = [
+      new TextDisplayBuilder().setContent(
+        link === null ? heading(title, 3) : heading(hyperlink(title, link), 3),
+      ),
+      new TextDisplayBuilder().setContent(
+        content === '' ? 'Нема опис.' : truncateString(content),
+      ),
+    ];
+
+    const containerBuilder = new ContainerBuilder().setAccentColor(
+      getThemeColor(),
+    );
+
+    const component =
+      image === null
+        ? containerBuilder.addTextDisplayComponents(textDisplayComponents)
+        : containerBuilder.addSectionComponents((sectionComponentBuilder) =>
+            sectionComponentBuilder
+              .addTextDisplayComponents(textDisplayComponents)
+              .setThumbnailAccessory((thumbnailBuilder) =>
+                thumbnailBuilder.setURL(image),
+              ),
+          );
 
     return {
-      embed,
+      component,
       id: this.getId(element),
     };
   }

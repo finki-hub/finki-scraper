@@ -1,4 +1,4 @@
-import { EmbedBuilder } from 'discord.js';
+import { ContainerBuilder, heading, hyperlink } from 'discord.js';
 
 import type { PostData } from '../lib/Post.js';
 import type { ScraperStrategy } from '../lib/Scraper.js';
@@ -19,20 +19,22 @@ export class ExampleStrategy implements ScraperStrategy {
     return url ?? null;
   }
 
-  // Function for returning an embed representation of each data container
+  // Function for returning a component representation of each data container
   public getPostData(element: Element): PostData {
     const url = element.querySelector('a')?.getAttribute('href')?.trim();
     const link = url ?? null;
     const title = element.querySelector('a')?.textContent.trim() ?? '?';
 
-    const embed = new EmbedBuilder()
-      .setTitle(title)
-      .setURL(link)
-      .setColor(getThemeColor())
-      .setTimestamp();
+    const component = new ContainerBuilder()
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(
+          heading(link === null ? title : hyperlink(title, link), 2),
+        ),
+      )
+      .setAccentColor(getThemeColor());
 
     return {
-      embed,
+      component,
       id: this.getId(element),
     };
   }

@@ -1,4 +1,4 @@
-import { EmbedBuilder } from 'discord.js';
+import { ContainerBuilder, heading, hyperlink } from 'discord.js';
 
 import type { PostData } from '../lib/Post.js';
 import type { ScraperStrategy } from '../lib/Scraper.js';
@@ -50,15 +50,19 @@ export class PartnersStrategy implements ScraperStrategy {
       name = 'A1';
     }
 
-    const embed = new EmbedBuilder()
-      .setTitle(name)
-      .setDescription('Нов партнер на ФИНКИ')
-      .setURL(url)
-      .setColor(getThemeColor())
-      .setTimestamp();
+    const component = new ContainerBuilder()
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(
+          url === null ? heading(name, 2) : heading(hyperlink(name, url), 2),
+        ),
+      )
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent('Нов партнер на ФИНКИ'),
+      )
+      .setAccentColor(getThemeColor());
 
     return {
-      embed,
+      component,
       id: this.getId(element),
     };
   }

@@ -1,4 +1,9 @@
-import { EmbedBuilder } from 'discord.js';
+import {
+  bold,
+  ContainerBuilder,
+  heading,
+  SeparatorSpacingSize,
+} from 'discord.js';
 import { CasAuthentication } from 'finki-auth';
 import { Service } from 'finki-auth/dist/lib/Service.js';
 
@@ -6,6 +11,7 @@ import type { PostData } from '../lib/Post.js';
 
 import { getConfigProperty, getThemeColor } from '../configuration/config.js';
 import { type ScraperStrategy } from '../lib/Scraper.js';
+import { truncateString } from '../utils/components.js';
 
 export class DiplomasStrategy implements ScraperStrategy {
   public idsSelector = 'div.panel-heading';
@@ -57,24 +63,44 @@ export class DiplomasStrategy implements ScraperStrategy {
     const member1 = cellText(2);
     const member2 = cellText(3);
 
-    const content = cellText(7).slice(0, 500);
+    const content = cellText(7);
 
-    const embed = new EmbedBuilder()
-      .setTitle(title)
-      .setAuthor({
-        name: `${index} - ${student}`,
-      })
-      .addFields([
-        { inline: true, name: 'Ментор', value: mentor },
-        { inline: true, name: 'Член 1', value: member1 },
-        { inline: true, name: 'Член 2', value: member2 },
-      ])
-      .setDescription(content === '' ? 'Нема опис.' : content)
-      .setColor(getThemeColor())
-      .setTimestamp();
+    const component = new ContainerBuilder()
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(bold(`${index} - ${student}`)),
+      )
+      .addSeparatorComponents((separatorComponent) =>
+        separatorComponent.setSpacing(SeparatorSpacingSize.Large),
+      )
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(heading(title, 3)),
+      )
+      .addSeparatorComponents((separatorComponent) =>
+        separatorComponent
+          .setSpacing(SeparatorSpacingSize.Small)
+          .setDivider(false),
+      )
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(
+          content === '' ? 'Нема опис.' : truncateString(content),
+        ),
+      )
+      .addSeparatorComponents((separatorComponent) =>
+        separatorComponent.setSpacing(SeparatorSpacingSize.Large),
+      )
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(`${bold('Ментор:')} ${mentor}`),
+      )
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(`${bold('Член 1:')} ${member1}`),
+      )
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(`${bold('Член 2:')} ${member2}`),
+      )
+      .setAccentColor(getThemeColor());
 
     return {
-      embed,
+      component,
       id: this.getId(element),
     };
   }

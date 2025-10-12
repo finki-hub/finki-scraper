@@ -1,6 +1,6 @@
-import type { EmbedBuilder } from 'discord.js';
+import type { APIMessageTopLevelComponent, JSONEncodable } from 'discord.js';
 
 export type PostData = {
-  embed: EmbedBuilder;
+  component: JSONEncodable<APIMessageTopLevelComponent>;
   id: null | string;
 };
