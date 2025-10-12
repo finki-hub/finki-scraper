@@ -1,4 +1,4 @@
-import { EmbedBuilder } from 'discord.js';
+import { ContainerBuilder, heading, hyperlink } from 'discord.js';
 
 import type { PostData } from '../lib/Post.js';
 import type { ScraperStrategy } from '../lib/Scraper.js';
@@ -25,14 +25,16 @@ export class TimetablesStrategy implements ScraperStrategy {
       url === undefined ? null : normalizeURL(url, 'https://finki.ukim.mk');
     const title = element.querySelector('a')?.textContent.trim() ?? '?';
 
-    const embed = new EmbedBuilder()
-      .setTitle(title)
-      .setURL(link)
-      .setColor(getThemeColor())
-      .setTimestamp();
+    const component = new ContainerBuilder()
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(
+          heading(link === null ? title : hyperlink(title, link), 2),
+        ),
+      )
+      .setAccentColor(getThemeColor());
 
     return {
-      embed,
+      component,
       id: this.getId(element),
     };
   }

@@ -1,7 +1,7 @@
 import {
-  type APIEmbed,
-  type EmbedBuilder,
-  roleMention,
+  type APIMessageTopLevelComponent,
+  type JSONEncodable,
+  MessageFlagsBitField,
   WebhookClient,
 } from 'discord.js';
 import { isCookieHeaderValid } from 'finki-auth';
@@ -28,6 +28,7 @@ import { MastersStrategy } from './strategies/MastersStrategy.js';
 import { PartnersStrategy } from './strategies/PartnersStrategy.js';
 import { ProjectsStrategy } from './strategies/ProjectsStrategy.js';
 import { TimetablesStrategy } from './strategies/TimetablesStrategy.js';
+import { createMentionComponent } from './utils/components.js';
 import { CACHE_PATH, ERROR_MESSAGES, LOG_MESSAGES } from './utils/constants.js';
 import { logger } from './utils/logger.js';
 import { errorWebhook } from './utils/webhooks.js';
@@ -113,7 +114,7 @@ export class Scraper {
     }
   }
 
-  public async runOnce(): Promise<APIEmbed[] | null> {
+  public async runOnce(): Promise<APIMessageTopLevelComponent[] | null> {
     this.logger.info(`[${this.scraperName}] ${LOG_MESSAGES.searching}`);
 
     await this.validateCookie();
@@ -163,7 +164,9 @@ export class Scraper {
     }
   }
 
-  private async getAndSendPosts(checkCache: boolean): Promise<APIEmbed[]> {
+  private async getAndSendPosts(
+    checkCache: boolean,
+  ): Promise<APIMessageTopLevelComponent[]> {
     if (this.cookie === undefined && this.strategy.getCookie !== undefined) {
       this.cookie = await this.strategy.getCookie();
       logger.info(`[${this.scraperName}] ${LOG_MESSAGES.fetchedCookie}`);
@@ -193,7 +196,7 @@ export class Scraper {
       logger.info(`[${this.scraperName}] ${LOG_MESSAGES.sentNewPosts}`);
     }
 
-    return validPosts;
+    return validPosts.map((component) => component.toJSON());
   }
 
   private getIdsFromPosts(posts: Element[]): Array<null | string> {
@@ -315,17 +318,17 @@ export class Scraper {
     posts: Element[],
     cache: string[],
     checkCache: boolean,
-  ): Promise<APIEmbed[]> {
+  ): Promise<Array<JSONEncodable<APIMessageTopLevelComponent>>> {
     const allPosts = this.strategy.filterPosts?.(posts) ?? posts.toReversed();
-    const validPosts: EmbedBuilder[] = [];
+    const validPosts: Array<JSONEncodable<APIMessageTopLevelComponent>> = [];
     const sendPosts = getConfigProperty('sendPosts');
 
     for (const post of allPosts) {
-      const { embed, id } = this.strategy.getPostData(post);
+      const { component, id } = this.strategy.getPostData(post);
 
       if (id === null) {
         await this.handleError(
-          `${ERROR_MESSAGES.postIdNotFound}: ${embed.data.title ?? 'Unknown'}`,
+          `${ERROR_MESSAGES.postIdNotFound}: ${JSON.stringify(component.toJSON())}`,
         );
 
         continue;
@@ -339,18 +342,18 @@ export class Scraper {
         continue;
       }
 
-      validPosts.push(embed);
+      validPosts.push(component);
 
       if (sendPosts) {
         try {
-          await this.sendPost(embed, id);
+          await this.sendPost(component, id);
         } catch (error) {
           await this.handleError(error, `while sending post: ${id}`);
         }
       }
     }
 
-    return validPosts.map((embed) => embed.data);
+    return validPosts;
   }
 
   private async readCacheFile(): Promise<string[]> {
@@ -368,14 +371,21 @@ export class Scraper {
     return content.trim().split('\n').filter(Boolean);
   }
 
-  private async sendPost(embed: EmbedBuilder, id: string): Promise<void> {
+  private async sendPost(
+    component: JSONEncodable<APIMessageTopLevelComponent>,
+    id: string,
+  ): Promise<void> {
     await this.webhook?.send({
-      content:
-        this.scraperConfig.role === undefined || this.scraperConfig.role === ''
-          ? ''
-          : roleMention(this.scraperConfig.role),
-      embeds: [embed],
+      components: [
+        ...(this.scraperConfig.role === undefined ||
+        this.scraperConfig.role === ''
+          ? []
+          : [createMentionComponent(this.scraperConfig.role)]),
+        component,
+      ],
+      flags: MessageFlagsBitField.Flags.IsComponentsV2,
       username: this.scraperConfig.name ?? this.scraperName,
+      withComponents: true,
     });
     this.logger.info(`[${this.scraperName}] ${LOG_MESSAGES.postSent}: ${id}`);
   }

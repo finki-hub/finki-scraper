@@ -1,10 +1,16 @@
-import { EmbedBuilder } from 'discord.js';
+import {
+  bold,
+  ContainerBuilder,
+  heading,
+  SeparatorSpacingSize,
+} from 'discord.js';
 import { CasAuthentication, Service } from 'finki-auth';
 
 import type { PostData } from '../lib/Post.js';
 import type { ScraperStrategy } from '../lib/Scraper.js';
 
 import { getConfigProperty, getThemeColor } from '../configuration/config.js';
+import { truncateString } from '../utils/components.js';
 
 export class MastersStrategy implements ScraperStrategy {
   public idsSelector = 'h5.p-2.mt-1';
@@ -63,24 +69,44 @@ export class MastersStrategy implements ScraperStrategy {
     const president = cellText(2);
     const member = cellText(3);
 
-    const content = cellText(8).slice(0, 500);
+    const content = cellText(8);
 
-    const embed = new EmbedBuilder()
-      .setTitle(title)
-      .setAuthor({
-        name: `${indexSpan} - ${student}`,
-      })
-      .addFields([
-        { inline: true, name: 'Ментор', value: mentor },
-        { inline: true, name: 'Претседател', value: president },
-        { inline: true, name: 'Член', value: member },
-      ])
-      .setDescription(content === '' ? 'Нема опис.' : content)
-      .setColor(getThemeColor())
-      .setTimestamp();
+    const component = new ContainerBuilder()
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(bold(`${indexSpan} - ${student}`)),
+      )
+      .addSeparatorComponents((separatorComponent) =>
+        separatorComponent.setSpacing(SeparatorSpacingSize.Large),
+      )
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(heading(title, 3)),
+      )
+      .addSeparatorComponents((separatorComponent) =>
+        separatorComponent
+          .setSpacing(SeparatorSpacingSize.Small)
+          .setDivider(false),
+      )
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(
+          content === '' ? 'Нема опис.' : truncateString(content),
+        ),
+      )
+      .addSeparatorComponents((separatorComponent) =>
+        separatorComponent.setSpacing(SeparatorSpacingSize.Large),
+      )
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(`${bold('Ментор:')} ${mentor}`),
+      )
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(`${bold('Претседател:')} ${president}`),
+      )
+      .addTextDisplayComponents((textDisplayComponent) =>
+        textDisplayComponent.setContent(`${bold('Член:')} ${member}`),
+      )
+      .setAccentColor(getThemeColor());
 
     return {
-      embed,
+      component,
       id: this.getId(element),
     };
   }
