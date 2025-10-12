@@ -43,17 +43,6 @@ You can select which scrapers to run declaratively (in the configuration with th
 
 There is an example configuration file available at [`config/config.sample.json`](./config/config.sample.json). Copy it to `config/config.json` and edit it to your liking.
 
-## Server Mode
-
-If you would like to consume the data from a REST API, run the app in server mode: `npm run serve`. The data will be scraped on each API call instead of periodically.
-
-- `GET /list` - get all active scrapers,
-- `GET /get/<name>` - get data from the scraper `<name>`
-- `DELETE /delete` - delete the cache of all scrapers
-- `DELETE /delete/<name>` - delete the cache of the scraper `<name>`
-
-The `<name>` parameter is what is specified in the configuration.
-
 ## License
 
 This project is licensed under the terms of the MIT license.
