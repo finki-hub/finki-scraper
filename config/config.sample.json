@@ -44,6 +44,12 @@
       "name": "Дипломски",
       "enabled": false
     },
+    "masters": {
+      "strategy": "masters",
+      "link": "https://magisterski.finki.ukim.mk/list-MasterThesis",
+      "name": "Магистерски",
+      "enabled": false
+    },
     "SIC": {
       "strategy": "course",
       "link": "https://courses.finki.ukim.mk/mod/forum/search.php?id=263&words=&phrase=&notwords=&fullwords=&hfromday=1&hfrommonth=1&hfromyear=1&hfromhour=1&hfromminute=1&htoday=1&htomonth=1&htoyear=1&htohour=1&htominute=1&forumid=486&subject=&user=&perpage=10",
