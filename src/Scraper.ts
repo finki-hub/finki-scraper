@@ -12,26 +12,11 @@ import { setTimeout } from 'node:timers/promises';
 import { type Logger } from 'pino';
 
 import { getConfigProperty } from './configuration/config.js';
-import {
-  type ScraperConfig,
-  type ScraperStrategy,
-  Strategy,
-  StrategySchema,
-} from './lib/Scraper.js';
-import { AnnouncementsStrategy } from './strategies/AnnouncementsStrategy.js';
-import { CourseStrategy } from './strategies/CourseStrategy.js';
-import { DiplomasStrategy } from './strategies/DiplomasStrategy.js';
-import { EventsStrategy } from './strategies/EventsStrategy.js';
-import { ExampleStrategy } from './strategies/ExampleStrategy.js';
-import { InternshipsStrategy } from './strategies/InternshipsStrategy.js';
-import { JobsStrategy } from './strategies/JobsStrategy.js';
-import { MastersStrategy } from './strategies/MastersStrategy.js';
-import { PartnersStrategy } from './strategies/PartnersStrategy.js';
-import { ProjectsStrategy } from './strategies/ProjectsStrategy.js';
-import { TimetablesStrategy } from './strategies/TimetablesStrategy.js';
+import { type ScraperConfig, type ScraperStrategy } from './lib/Scraper.js';
 import { createMentionComponent } from './utils/components.js';
 import { CACHE_PATH, ERROR_MESSAGES, LOG_MESSAGES } from './utils/constants.js';
 import { logger } from './utils/logger.js';
+import { createStrategy } from './utils/strategies.js';
 import { errorWebhook } from './utils/webhooks.js';
 
 export class Scraper {
@@ -60,7 +45,7 @@ export class Scraper {
 
     this.scraperName = scraperName;
     this.scraperConfig = scraper;
-    this.strategy = this.getStrategy();
+    this.strategy = createStrategy(this.scraperConfig.strategy);
     this.logger = logger;
 
     const webhookUrl =
@@ -220,43 +205,6 @@ export class Scraper {
     }
 
     return lastPosts;
-  }
-
-  private getStrategy(): ScraperStrategy {
-    const { data: scraperStrategy, success } = StrategySchema.safeParse(
-      this.scraperConfig.strategy,
-    );
-
-    if (!success) {
-      throw new Error(ERROR_MESSAGES.strategyNotFound);
-    }
-
-    switch (scraperStrategy) {
-      case Strategy.Announcements:
-        return new AnnouncementsStrategy();
-      case Strategy.Course:
-        return new CourseStrategy();
-      case Strategy.Diplomas:
-        return new DiplomasStrategy();
-      case Strategy.Events:
-        return new EventsStrategy();
-      case Strategy.Example:
-        return new ExampleStrategy();
-      case Strategy.Internships:
-        return new InternshipsStrategy();
-      case Strategy.Jobs:
-        return new JobsStrategy();
-      case Strategy.Masters:
-        return new MastersStrategy();
-      case Strategy.Partners:
-        return new PartnersStrategy();
-      case Strategy.Projects:
-        return new ProjectsStrategy();
-      case Strategy.Timetables:
-        return new TimetablesStrategy();
-      default:
-        throw new Error(ERROR_MESSAGES.strategyNotFound);
-    }
   }
 
   private async getTextFromResponse(response: Response): Promise<string> {
