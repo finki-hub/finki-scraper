@@ -20,6 +20,7 @@ export enum Strategy {
   Diplomas = 'diplomas',
   Events = 'events',
   Example = 'example',
+  Internships = 'internships',
   Jobs = 'jobs',
   Masters = 'masters',
   Partners = 'partners',
