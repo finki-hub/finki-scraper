@@ -6,7 +6,7 @@
   "dependencies": {
     "discord.js": "^14.23.2",
     "finki-auth": "^1.8.0",
-    "jsdom": "^27.0.0",
+    "jsdom": "^27.0.1",
     "pino": "^10.0.0",
     "pino-pretty": "^13.1.2",
     "zod": "^4.1.12"
