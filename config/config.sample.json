@@ -26,6 +26,13 @@
       "webhook": "your_jobs_webhook",
       "enabled": true
     },
+    "internships": {
+      "strategy": "internships",
+      "link": "https://internships.finki.ukim.mk/published-website-postings",
+      "name": "Огласи",
+      "webhook": "your_jobs_webhook",
+      "enabled": true
+    },
     "events": {
       "strategy": "events",
       "link": "https://finki.ukim.mk/mk/fcse-events",
@@ -60,6 +67,12 @@
       "strategy": "course",
       "link": "https://courses.finki.ukim.mk/mod/forum/search.php?id=2631&words=&phrase=&notwords=&fullwords=&hfromday=1&hfrommonth=1&hfromyear=1&hfromhour=1&hfromminute=1&htoday=1&htomonth=1&htoyear=1&htohour=1&htominute=1&forumid=4101&subject=&user=&perpage=10",
       "name": "Дизајн на интеракцијата човек-компјутер",
+      "enabled": false
+    },
+    "bnp-activities": {
+      "strategy": "activities",
+      "link": "https://courses.finki.ukim.mk/course/view.php?id=2839",
+      "name": "Бази на податоци",
       "enabled": false
     },
     "timetables": {
