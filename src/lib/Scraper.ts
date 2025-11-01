@@ -15,6 +15,7 @@ export const ScraperConfigSchema = z.object({
 });
 
 export enum Strategy {
+  Activities = 'activities',
   Announcements = 'announcements',
   Course = 'course',
   Diplomas = 'diplomas',

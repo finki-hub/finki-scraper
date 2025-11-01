@@ -23,4 +23,25 @@ export const ERROR_MESSAGES = {
   strategyNotFound: 'Strategy not found',
 } as const;
 
+export const ACTIVITY_TYPES: Record<string, string> = {
+  assign: 'Место за прикачување',
+  bigbluebuttonbn: 'BigBlueButton',
+  book: 'Книга',
+  chat: 'Чет',
+  choice: 'Анкета',
+  data: 'Податок',
+  feedback: 'Повратна информација',
+  folder: 'Папка',
+  forum: 'Форум',
+  label: 'Текст',
+  lesson: 'Лекција',
+  page: 'Страница',
+  poll: 'Анкета',
+  quiz: 'Квиз',
+  resource: 'Датотека',
+  subsection: 'Потсекција',
+  url: 'Линк',
+  wiki: 'Вики',
+} as const;
+
 export const CACHE_PATH = 'cache';

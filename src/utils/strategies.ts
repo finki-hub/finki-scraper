@@ -3,6 +3,7 @@ import {
   Strategy,
   StrategySchema,
 } from '../lib/Scraper.js';
+import { ActivitiesStrategy } from '../strategies/ActivitiesStrategy.js';
 import { AnnouncementsStrategy } from '../strategies/AnnouncementsStrategy.js';
 import { CourseStrategy } from '../strategies/CourseStrategy.js';
 import { DiplomasStrategy } from '../strategies/DiplomasStrategy.js';
@@ -25,6 +26,8 @@ export const createStrategy = (strategyName: unknown): ScraperStrategy => {
   }
 
   switch (scraperStrategy) {
+    case Strategy.Activities:
+      return new ActivitiesStrategy();
     case Strategy.Announcements:
       return new AnnouncementsStrategy();
     case Strategy.Course:
