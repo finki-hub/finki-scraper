@@ -1,5 +1,6 @@
 import {
   type APIMessageTopLevelComponent,
+  codeBlock,
   type JSONEncodable,
   MessageFlagsBitField,
   WebhookClient,
@@ -279,7 +280,7 @@ export class Scraper {
 
       if (id === null) {
         await this.handleError(
-          `${ERROR_MESSAGES.postIdNotFound}: ${JSON.stringify(component.toJSON())}`,
+          `${ERROR_MESSAGES.postIdNotFound}: ${codeBlock(JSON.stringify(component.toJSON(), null, 2))}`,
         );
 
         continue;
