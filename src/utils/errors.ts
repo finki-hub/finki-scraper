@@ -7,7 +7,8 @@ export const registerGlobalErrorHandlers = () => {
 
     const msg =
       `❌ **Unhandled Promise Rejection (global)**\n` +
-      `Message: ${reason instanceof Error ? reason.message : String(reason)}`;
+      `Message: ${reason instanceof Error ? reason.message : String(reason)}\n` +
+      `⚠️ **The application will continue running**, but this indicates a bug that should be fixed.`;
 
     try {
       await errorWebhook?.send({ content: msg });
@@ -19,7 +20,10 @@ export const registerGlobalErrorHandlers = () => {
   process.on('uncaughtException', async (err) => {
     logger.error({ err }, 'Uncaught Exception');
 
-    const msg = `🚨 **Uncaught Exception (global)**\nMessage: ${err.message}`;
+    const msg =
+      `🚨 **Uncaught Exception (global)**\n` +
+      `Message: ${err.message}\n` +
+      `🛑 **THE APPLICATION WILL NOW EXIT**. This is a critical error that requires immediate attention.`;
 
     try {
       await errorWebhook?.send({ content: msg });

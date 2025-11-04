@@ -86,7 +86,15 @@ export class Scraper {
     while (true) {
       this.logger.info(`[${this.scraperName}] ${LOG_MESSAGES.searching}`);
 
-      await this.validateCookie();
+      try {
+        await this.validateCookie();
+      } catch (error) {
+        await this.handleError(error, 'while validating cookie');
+        this.cookie = undefined;
+        await Scraper.sleep(getConfigProperty('errorDelay'));
+
+        continue;
+      }
 
       try {
         await this.getAndSendPosts(true);
@@ -104,7 +112,13 @@ export class Scraper {
   public async runOnce(): Promise<APIMessageTopLevelComponent[] | null> {
     this.logger.info(`[${this.scraperName}] ${LOG_MESSAGES.searching}`);
 
-    await this.validateCookie();
+    try {
+      await this.validateCookie();
+    } catch (error) {
+      await this.handleError(error, 'while validating cookie');
+      this.cookie = undefined;
+      return null;
+    }
 
     try {
       return await this.getAndSendPosts(false);
@@ -155,8 +169,12 @@ export class Scraper {
     checkCache: boolean,
   ): Promise<APIMessageTopLevelComponent[]> {
     if (this.cookie === undefined && this.strategy.getCookie !== undefined) {
-      this.cookie = await this.strategy.getCookie();
-      logger.info(`[${this.scraperName}] ${LOG_MESSAGES.fetchedCookie}`);
+      try {
+        this.cookie = await this.strategy.getCookie();
+        logger.info(`[${this.scraperName}] ${LOG_MESSAGES.fetchedCookie}`);
+      } catch (error) {
+        throw new Error('Failed to fetch cookie', { cause: error });
+      }
     }
 
     const response = await this.fetchData();
