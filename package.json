@@ -4,7 +4,7 @@
     "url": "https://github.com/Delemangi/finki-scraper/issues"
   },
   "dependencies": {
-    "discord.js": "^14.24.2",
+    "discord.js": "^14.25.0",
     "finki-auth": "^1.8.0",
     "jsdom": "^27.2.0",
     "pino": "^10.1.0",
