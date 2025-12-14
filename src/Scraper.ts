@@ -137,11 +137,11 @@ export class Scraper {
 
     const isValidCookie = Boolean(
       this.strategy.scraperService &&
-        this.cookie &&
-        (await isCookieHeaderValid({
-          cookieHeader: this.cookie,
-          service: this.strategy.scraperService,
-        })),
+      this.cookie &&
+      (await isCookieHeaderValid({
+        cookieHeader: this.cookie,
+        service: this.strategy.scraperService,
+      })),
     );
 
     if (!isValidCookie) {
