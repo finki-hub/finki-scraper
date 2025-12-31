@@ -1,7 +1,6 @@
 import type { FullyRequiredConfig } from '../lib/Config.js';
 
 export const DEFAULT_CONFIGURATION: FullyRequiredConfig = {
-  color: [49, 49, 131],
   errorDelay: 60_000,
   errorWebhook: '',
   maxPosts: 20,

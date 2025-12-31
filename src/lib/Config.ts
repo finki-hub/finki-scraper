@@ -16,16 +16,6 @@ const CredentialsSchema = z.object({
 });
 
 export const RequiredConfigSchema = z.object({
-  color: z
-    .string()
-    .regex(/^#[\da-f]{6}$/iu, 'Invalid color format, expected `#RRGGBB`')
-    .transform((hex) => {
-      const r = Number.parseInt(hex.slice(1, 3), 16);
-      const g = Number.parseInt(hex.slice(3, 5), 16);
-      const b = Number.parseInt(hex.slice(5, 7), 16);
-      return [r, g, b] as [number, number, number];
-    })
-    .optional(),
   credentials: CredentialsSchema.optional(),
   errorDelay: z.number().optional(),
   errorWebhook: z.string().optional(),

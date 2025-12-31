@@ -9,7 +9,7 @@ import { Service } from 'finki-auth/dist/lib/Service.js';
 
 import type { PostData } from '../lib/Post.js';
 
-import { getConfigProperty, getThemeColor } from '../configuration/config.js';
+import { getConfigProperty } from '../configuration/config.js';
 import { type ScraperStrategy } from '../lib/Scraper.js';
 import { truncateString } from '../utils/components.js';
 
@@ -96,8 +96,7 @@ export class DiplomasStrategy implements ScraperStrategy {
       )
       .addTextDisplayComponents((textDisplayComponent) =>
         textDisplayComponent.setContent(`${bold('Член 2:')} ${member2}`),
-      )
-      .setAccentColor(getThemeColor());
+      );
 
     return {
       component,

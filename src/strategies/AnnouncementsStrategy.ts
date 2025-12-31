@@ -2,7 +2,6 @@ import { ContainerBuilder, heading, hyperlink } from 'discord.js';
 
 import type { PostData } from '../lib/Post.js';
 
-import { getThemeColor } from '../configuration/config.js';
 import { type ScraperStrategy } from '../lib/Scraper.js';
 
 export class AnnouncementsStrategy implements ScraperStrategy {
@@ -23,13 +22,12 @@ export class AnnouncementsStrategy implements ScraperStrategy {
     const link = url === undefined ? null : `https://finki.ukim.mk${url}`;
     const title = element.querySelector('a')?.textContent.trim() ?? '?';
 
-    const component = new ContainerBuilder()
-      .addTextDisplayComponents((textDisplayComponent) =>
+    const component = new ContainerBuilder().addTextDisplayComponents(
+      (textDisplayComponent) =>
         textDisplayComponent.setContent(
           heading(link === null ? title : hyperlink(title, link), 2),
         ),
-      )
-      .setAccentColor(getThemeColor());
+    );
 
     return {
       component,

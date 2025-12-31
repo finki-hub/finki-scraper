@@ -7,7 +7,6 @@ import {
 
 import type { PostData } from '../lib/Post.js';
 
-import { getThemeColor } from '../configuration/config.js';
 import { type ScraperStrategy } from '../lib/Scraper.js';
 import { truncateString } from '../utils/components.js';
 
@@ -45,9 +44,7 @@ export class EventsStrategy implements ScraperStrategy {
       ),
     ];
 
-    const containerBuilder = new ContainerBuilder().setAccentColor(
-      getThemeColor(),
-    );
+    const containerBuilder = new ContainerBuilder();
 
     const component =
       image === null

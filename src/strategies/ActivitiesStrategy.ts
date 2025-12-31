@@ -10,7 +10,7 @@ import { CasAuthentication, Service } from 'finki-auth';
 import type { PostData } from '../lib/Post.js';
 import type { ScraperStrategy } from '../lib/Scraper.js';
 
-import { getConfigProperty, getThemeColor } from '../configuration/config.js';
+import { getConfigProperty } from '../configuration/config.js';
 import { truncateString } from '../utils/components.js';
 import { ACTIVITY_TYPES } from '../utils/constants.js';
 
@@ -60,13 +60,12 @@ export class ActivitiesStrategy implements ScraperStrategy {
     const rawType = element.classList.item(2) ?? '';
     const type = ACTIVITY_TYPES[rawType] ?? null;
 
-    const component = new ContainerBuilder()
-      .addTextDisplayComponents((textDisplayComponent) =>
+    const component = new ContainerBuilder().addTextDisplayComponents(
+      (textDisplayComponent) =>
         textDisplayComponent.setContent(
           link === null ? heading(name, 2) : heading(hyperlink(name, link), 2),
         ),
-      )
-      .setAccentColor(getThemeColor());
+    );
 
     if (type !== null) {
       component.addTextDisplayComponents((textDisplayComponent) =>

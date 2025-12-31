@@ -1,5 +1,4 @@
 {
-  "color": "#ff0000",
   "credentials": {
     "username": "your_cas_username",
     "password": "your_cas_password"

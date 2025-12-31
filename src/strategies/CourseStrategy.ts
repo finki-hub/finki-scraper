@@ -9,7 +9,7 @@ import { CasAuthentication, Service } from 'finki-auth';
 
 import type { PostData } from '../lib/Post.js';
 
-import { getConfigProperty, getThemeColor } from '../configuration/config.js';
+import { getConfigProperty } from '../configuration/config.js';
 import { type ScraperStrategy } from '../lib/Scraper.js';
 import { truncateString } from '../utils/components.js';
 
@@ -83,9 +83,7 @@ export class CourseStrategy implements ScraperStrategy {
       ),
     ];
 
-    const containerBuilder = new ContainerBuilder().setAccentColor(
-      getThemeColor(),
-    );
+    const containerBuilder = new ContainerBuilder();
 
     const component =
       authorImage === null

@@ -3,8 +3,6 @@ import { ContainerBuilder, heading, hyperlink } from 'discord.js';
 import type { PostData } from '../lib/Post.js';
 import type { ScraperStrategy } from '../lib/Scraper.js';
 
-import { getThemeColor } from '../configuration/config.js';
-
 const PARTNER_LABELS = ['Gold partner', 'Silver partner'] as const;
 
 const cleanPartnerName = (name: null | string): null | string => {
@@ -58,8 +56,7 @@ export class PartnersStrategy implements ScraperStrategy {
       )
       .addTextDisplayComponents((textDisplayComponent) =>
         textDisplayComponent.setContent('Нов партнер на ФИНКИ'),
-      )
-      .setAccentColor(getThemeColor());
+      );
 
     return {
       component,

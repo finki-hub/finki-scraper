@@ -21,5 +21,3 @@ const config = initializeConfig();
 
 export const getConfigProperty = <T extends ConfigKeys>(property: T) =>
   config?.[property] ?? DEFAULT_CONFIGURATION[property];
-
-export const getThemeColor = () => getConfigProperty('color');

@@ -7,7 +7,6 @@ import {
 
 import type { PostData } from '../lib/Post.js';
 
-import { getThemeColor } from '../configuration/config.js';
 import { type ScraperStrategy } from '../lib/Scraper.js';
 import { truncateString } from '../utils/components.js';
 
@@ -45,23 +44,20 @@ export class JobsStrategy implements ScraperStrategy {
       ),
     ];
 
-    const containerBuilder = new ContainerBuilder().setAccentColor(
-      getThemeColor(),
-    );
-
-    const component =
-      image === null
-        ? containerBuilder.addTextDisplayComponents(textDisplayComponents)
-        : containerBuilder.addSectionComponents((sectionComponentBuilder) =>
-            sectionComponentBuilder
-              .addTextDisplayComponents(textDisplayComponents)
-              .setThumbnailAccessory((thumbnailBuilder) =>
-                thumbnailBuilder.setURL(image),
-              ),
-          );
-
     return {
-      component,
+      component:
+        image === null
+          ? new ContainerBuilder().addTextDisplayComponents(
+              textDisplayComponents,
+            )
+          : new ContainerBuilder().addSectionComponents(
+              (sectionComponentBuilder) =>
+                sectionComponentBuilder
+                  .addTextDisplayComponents(textDisplayComponents)
+                  .setThumbnailAccessory((thumbnailBuilder) =>
+                    thumbnailBuilder.setURL(image),
+                  ),
+            ),
       id: this.getId(element),
     };
   }
