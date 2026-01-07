@@ -33,9 +33,10 @@
   },
   "scripts": {
     "build": "npm run clean && node esbuild.config.js",
+    "check": "tsc --noEmit",
     "clean": "rimraf dist",
     "format": "eslint . --cache --fix",
-    "lint": "tsc --noEmit && eslint . --cache",
+    "lint": "eslint . --cache",
     "start": "node dist/index.js"
   },
   "type": "module",
