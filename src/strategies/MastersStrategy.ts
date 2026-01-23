@@ -36,12 +36,11 @@ export class MastersStrategy implements ScraperStrategy {
   }
 
   public getId(element: Element): null | string {
-    return (
-      element
-        .querySelector(this.idsSelector)
-        ?.textContent.replaceAll(/\s+/gu, ' ')
-        .trim() ?? null
-    );
+    const id = element
+      .querySelector(this.idsSelector)
+      ?.textContent.replaceAll(/\s+/gu, ' ')
+      .trim();
+    return id === undefined || id === '' ? null : id;
   }
 
   public getPostData(element: Element): PostData {

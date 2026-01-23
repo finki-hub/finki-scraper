@@ -41,7 +41,9 @@ export class InternshipsStrategy implements ScraperStrategy {
       .querySelector(this.idsSelector)
       ?.getAttribute('href')
       ?.trim();
-    return url === undefined ? null : `https://internships.finki.ukim.mk${url}`;
+    return url === undefined || url === ''
+      ? null
+      : `https://internships.finki.ukim.mk${url}`;
   }
 
   public getPostData(element: Element): PostData {

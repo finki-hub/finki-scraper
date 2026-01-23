@@ -16,7 +16,9 @@ const cleanPartnerName = (name: null | string): null | string => {
     cleanedName = cleanedName.replace(label, '').trim();
   }
 
-  return cleanedName.replaceAll(/\s+/gu, ' ').trim();
+  const result = cleanedName.replaceAll(/\s+/gu, ' ').trim();
+
+  return result === '' ? null : result;
 };
 
 const isSupportedByPartner = (url: string): boolean => url.includes('a1.com');
@@ -34,9 +36,7 @@ export class PartnersStrategy implements ScraperStrategy {
       return 'A1';
     }
 
-    const name = cleanPartnerName(element.textContent);
-
-    return name ?? null;
+    return cleanPartnerName(element.textContent);
   }
 
   public getPostData(element: Element): PostData {

@@ -14,7 +14,9 @@ export class AnnouncementsStrategy implements ScraperStrategy {
       .querySelector(this.idsSelector)
       ?.getAttribute('href')
       ?.trim();
-    return url === undefined ? null : `https://finki.ukim.mk${url}`;
+    return url === undefined || url === ''
+      ? null
+      : `https://finki.ukim.mk${url}`;
   }
 
   public getPostData(element: Element): PostData {

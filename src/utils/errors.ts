@@ -35,3 +35,26 @@ export const registerGlobalErrorHandlers = () => {
     process.exit(1);
   });
 };
+
+export const extractErrorCauses = (error: unknown): string[] => {
+  const causes: string[] = [];
+  let current: unknown = error;
+
+  while (current !== undefined && current !== null) {
+    if (Error.isError(current)) {
+      if (current.cause !== undefined && current.cause !== current) {
+        current = current.cause;
+        const causeMessage = Error.isError(current)
+          ? current.message
+          : String(current);
+        causes.push(causeMessage);
+      } else {
+        break;
+      }
+    } else {
+      break;
+    }
+  }
+
+  return causes;
+};

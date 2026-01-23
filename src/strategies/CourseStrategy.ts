@@ -41,10 +41,11 @@ export class CourseStrategy implements ScraperStrategy {
   }
 
   public getId(element: Element): null | string {
-    return (
-      element.querySelector(this.idsSelector)?.getAttribute('href')?.trim() ??
-      null
-    );
+    const id = element
+      .querySelector(this.idsSelector)
+      ?.getAttribute('href')
+      ?.trim();
+    return id === undefined || id === '' ? null : id;
   }
 
   public getPostData(element: Element): PostData {
