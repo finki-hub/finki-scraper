@@ -41,19 +41,19 @@ export const extractErrorCauses = (error: unknown): string[] => {
   let current: unknown = error;
 
   while (current !== undefined && current !== null) {
-    if (Error.isError(current)) {
-      if (current.cause !== undefined && current.cause !== current) {
-        current = current.cause;
-        const causeMessage = Error.isError(current)
-          ? current.message
-          : String(current);
-        causes.push(causeMessage);
-      } else {
-        break;
-      }
-    } else {
+    if (!Error.isError(current)) {
       break;
     }
+
+    const next: unknown = current.cause;
+
+    if (next === undefined || next === current) {
+      break;
+    }
+
+    current = next;
+
+    causes.push(Error.isError(current) ? current.message : String(current));
   }
 
   return causes;
