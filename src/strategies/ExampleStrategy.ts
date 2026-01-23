@@ -14,7 +14,7 @@ export class ExampleStrategy implements ScraperStrategy {
       .querySelector(this.idsSelector)
       ?.getAttribute('href')
       ?.trim();
-    return url ?? null;
+    return url === undefined || url === '' ? null : url;
   }
 
   // Function for returning a component representation of each data container

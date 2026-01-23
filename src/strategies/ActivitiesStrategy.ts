@@ -38,7 +38,8 @@ export class ActivitiesStrategy implements ScraperStrategy {
   }
 
   public getId(element: Element): null | string {
-    return element.getAttribute('data-id')?.trim() ?? null;
+    const id = element.getAttribute('data-id')?.trim();
+    return id === undefined || id === '' ? null : id;
   }
 
   public getPostData(element: Element): PostData {

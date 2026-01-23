@@ -14,8 +14,9 @@ import { type Logger } from 'pino';
 
 import { getConfigProperty } from './configuration/config.js';
 import { type ScraperConfig, type ScraperStrategy } from './lib/Scraper.js';
-import { createMentionComponent } from './utils/components.js';
+import { createMentionComponent, truncateString } from './utils/components.js';
 import { CACHE_PATH, ERROR_MESSAGES, LOG_MESSAGES } from './utils/constants.js';
+import { extractErrorCauses } from './utils/errors.js';
 import { logger } from './utils/logger.js';
 import { createStrategy } from './utils/strategies.js';
 import { errorWebhook } from './utils/webhooks.js';
@@ -71,13 +72,6 @@ export class Scraper {
     }
   }
 
-  public async clearCache(): Promise<void> {
-    await writeFile(this.getFullCachePath(), '', {
-      encoding: 'utf8',
-      flag: 'w',
-    });
-  }
-
   public getFullCachePath(): string {
     return `./${CACHE_PATH}/${this.scraperName}`;
   }
@@ -89,7 +83,7 @@ export class Scraper {
       try {
         await this.validateCookie();
       } catch (error) {
-        await this.handleError(error, 'while validating cookie');
+        await this.handleError(error, 'while validating cookie', this.cookie);
         this.cookie = undefined;
         await Scraper.sleep(getConfigProperty('errorDelay'));
 
@@ -106,25 +100,6 @@ export class Scraper {
       }
 
       await Scraper.sleep(getConfigProperty('successDelay'));
-    }
-  }
-
-  public async runOnce(): Promise<APIMessageTopLevelComponent[] | null> {
-    this.logger.info(`[${this.scraperName}] ${LOG_MESSAGES.searching}`);
-
-    try {
-      await this.validateCookie();
-    } catch (error) {
-      await this.handleError(error, 'while validating cookie');
-      this.cookie = undefined;
-      return null;
-    }
-
-    try {
-      return await this.getAndSendPosts(false);
-    } catch (error) {
-      await this.handleError(error, 'while fetching and sending posts');
-      return null;
     }
   }
 
@@ -167,7 +142,7 @@ export class Scraper {
 
   private async getAndSendPosts(
     checkCache: boolean,
-  ): Promise<APIMessageTopLevelComponent[]> {
+  ): Promise<Array<JSONEncodable<APIMessageTopLevelComponent>>> {
     if (this.cookie === undefined && this.strategy.getCookie !== undefined) {
       try {
         this.cookie = await this.strategy.getCookie();
@@ -201,7 +176,7 @@ export class Scraper {
       logger.info(`[${this.scraperName}] ${LOG_MESSAGES.sentNewPosts}`);
     }
 
-    return validPosts.map((component) => component.toJSON());
+    return validPosts;
   }
 
   private getIdsFromPosts(posts: Element[]): Array<null | string> {
@@ -236,7 +211,11 @@ export class Scraper {
     }
   }
 
-  private async handleError(error: unknown, context?: string): Promise<void> {
+  private async handleError(
+    error: unknown,
+    context?: string,
+    code?: string,
+  ): Promise<void> {
     let errorMessage = 'Unknown error';
     let stackTrace: string | undefined;
 
@@ -253,7 +232,21 @@ export class Scraper {
       }
     }
 
-    this.logger.error(`[${this.scraperName}] ${context ?? ''} ${errorMessage}`);
+    const causes = extractErrorCauses(error);
+    const causesString = causes.length > 0 ? causes.join(' <- ') : null;
+    const sourceUrl = this.scraperConfig.link;
+
+    this.logger.error(
+      `[${this.scraperName}] ${context ?? ''} ${sourceUrl} ${errorMessage}`,
+    );
+
+    if (causesString !== null) {
+      this.logger.error(`Cause: ${causesString}`);
+    }
+
+    if (code) {
+      this.logger.error(code);
+    }
 
     if (stackTrace) {
       this.logger.error(stackTrace);
@@ -262,7 +255,10 @@ export class Scraper {
     const webhookMessage = [
       `❌ Error in **${this.scraperName}**`,
       context ? `Context: ${context}` : null,
+      `Source: ${sourceUrl}`,
       `Message: ${errorMessage}`,
+      causesString ? `Cause: ${causesString}` : null,
+      code ? codeBlock(truncateString(code, 1_000)) : null,
     ]
       .filter(Boolean)
       .join('\n');
@@ -298,7 +294,9 @@ export class Scraper {
 
       if (id === null) {
         await this.handleError(
-          `${ERROR_MESSAGES.postIdNotFound}: ${codeBlock(JSON.stringify(component.toJSON(), null, 2))}`,
+          ERROR_MESSAGES.postIdNotFound,
+          'while extracting post ID',
+          post.outerHTML,
         );
 
         continue;
@@ -318,7 +316,11 @@ export class Scraper {
         try {
           await this.sendPost(component, id);
         } catch (error) {
-          await this.handleError(error, `while sending post: ${id}`);
+          await this.handleError(
+            error,
+            `while sending post: ${id}`,
+            JSON.stringify(component.toJSON(), null, 2),
+          );
         }
       }
     }

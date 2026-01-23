@@ -11,11 +11,11 @@ export class TimetablesStrategy implements ScraperStrategy {
   public postsSelector = 'div.col-sm-11';
 
   public getId(element: Element): null | string {
-    const url = element
+    const id = element
       .querySelector(this.idsSelector)
       ?.textContent.replaceAll(/\s+/gu, ' ')
       .trim();
-    return url ?? null;
+    return id === undefined || id === '' ? null : id;
   }
 
   public getPostData(element: Element): PostData {
