@@ -21,7 +21,14 @@ const cleanPartnerName = (name: null | string): null | string => {
   return result === '' ? null : result;
 };
 
-const isSupportedByPartner = (url: string): boolean => url.includes('a1.com');
+const isSupportedByPartner = (url: string): boolean => {
+  try {
+    const { hostname } = new URL(url, 'http://dummy-base/');
+    return hostname === 'a1.com';
+  } catch {
+    return false;
+  }
+};
 
 export class PartnersStrategy implements ScraperStrategy {
   public idsSelector = 'a';
