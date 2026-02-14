@@ -2,6 +2,6 @@
   "eslint.useFlatConfig": true,
   "sonarlint.connectedMode.project": {
     "connectionId": "finki-hub",
-    "projectKey": "finki-scraper"
+    "projectKey": "finki-hub-services-scraper"
   }
 }

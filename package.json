@@ -1,7 +1,7 @@
 {
   "author": "Delemangi",
   "bugs": {
-    "url": "https://github.com/Delemangi/finki-scraper/issues"
+    "url": "https://github.com/finki-hub/services-scraper/issues"
   },
   "dependencies": {
     "discord.js": "^14.25.1",
@@ -23,13 +23,13 @@
   "engines": {
     "node": ">=24.10.0"
   },
-  "homepage": "https://github.com/Delemangi/finki-scraper",
+  "homepage": "https://github.com/finki-hub/services-scraper",
   "license": "MIT",
   "main": "dist/index.js",
-  "name": "finki-scraper",
+  "name": "services-scraper",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Delemangi/finki-scraper.git"
+    "url": "git+https://github.com/finki-hub/services-scraper.git"
   },
   "scripts": {
     "build": "npm run clean && node esbuild.config.js",

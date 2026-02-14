@@ -1,6 +1,6 @@
-# FINKI Scraper
+# FINKI Hub / Services Scraper
 
-Tooling for scraping and providing publicly available data from FCSE services. The data is provided using a REST API or webhooks. Requires Node.js >= 20.
+Tooling for scraping and providing publicly available data from FCSE services. The data is provided using a REST API or webhooks. Requires Node.js 24+.
 
 ## Architecture
 
@@ -10,7 +10,7 @@ The scrapers are implemented as classes (called strategies) which contain severa
 
 To run the scraper:
 
-1. Clone the repository: `git clone https://github.com/finki-hub/finki-scraper.git`
+1. Clone the repository: `git clone https://github.com/finki-hub/services-scraper.git`
 2. Prepare configuration by copying `config/config.sample.json` to `config/config.json`
 3. Install dependencies: `npm i`
 4. Run the scraper `npm run start`
@@ -19,12 +19,12 @@ It's also available as a Docker image:
 
 ```sh
 docker run -d \
-  --name finki-scraper \
+  --name services-scraper \
   --restart unless-stopped \
   -v ./cache:/app/cache \
   -v ./config:/app/config \
   -v ./logs:/app/logs \
-  ghcr.io/finki-hub/finki-scraper:latest
+  ghcr.io/finki-hub/services-scraper:latest
 ```
 
 Or Docker Compose: `docker compose up -d`
@@ -33,7 +33,7 @@ You can select which scrapers to run declaratively (in the configuration with th
 
 ## Quick Setup (Development)
 
-1. Clone the repository: `git clone https://github.com/finki-hub/finki-scraper.git`
+1. Clone the repository: `git clone https://github.com/finki-hub/services-scraper.git`
 2. Install dependencies: `npm i`
 3. Prepare configuration: `cp config/config.sample.json config/config.json`
 4. Build the project: `npm run build`

@@ -1,8 +1,8 @@
-name: finki-scraper
+name: finki-hub-services-scraper
+
 services:
   scraper:
-    container_name: finki-scraper
-    image: ghcr.io/finki-hub/finki-scraper:latest
+    image: ghcr.io/finki-hub/services-scraper:latest
     restart: unless-stopped
     volumes:
       - ./cache:/app/cache
