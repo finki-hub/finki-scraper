@@ -2,8 +2,10 @@ name: finki-hub-services-scraper-dev
 
 services:
   scraper:
-    build: .
-    image: services-scraper-dev:latest
+    build:
+      context: .
+    image: finki-hub/services-scraper:latest
+    pull_policy: never
     restart: unless-stopped
     volumes:
       - ./cache:/app/cache
